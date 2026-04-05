@@ -1,0 +1,23 @@
+{
+  "title": "Battery Emulator",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Battery Emulator (MQTT)",
+        "description": "Uses the same MQTT topic prefix as configured in the Battery Emulator web UI (default: BE). The Home Assistant MQTT integration must already be configured.",
+        "data": {
+          "topic_prefix": "MQTT topic prefix",
+          "name": "Device name",
+          "use_battery_2": "Second battery pack (spec_data_2 / balancing_data_2)"
+        }
+      }
+    },
+    "error": {
+      "invalid_prefix": "Topic prefix cannot be empty."
+    },
+    "abort": {
+      "mqtt_not_configured": "Configure the MQTT integration first.",
+      "already_configured": "This MQTT topic prefix is already configured."
+    }
+  }
+}
