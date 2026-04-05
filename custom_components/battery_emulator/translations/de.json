@@ -1,0 +1,23 @@
+{
+  "title": "Battery Emulator",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Battery Emulator (MQTT)",
+        "description": "Verwendet dasselbe MQTT-Topic-Präfix wie im Web-UI des Battery Emulator (Standard: BE). Die Home-Assistant-MQTT-Integration muss bereits eingerichtet sein.",
+        "data": {
+          "topic_prefix": "MQTT-Topic-Präfix",
+          "name": "Gerätename",
+          "use_battery_2": "Zweites Batteriepack (spec_data_2 / balancing_data_2)"
+        }
+      }
+    },
+    "error": {
+      "invalid_prefix": "Das Topic-Präfix darf nicht leer sein."
+    },
+    "abort": {
+      "mqtt_not_configured": "Bitte zuerst die MQTT-Integration einrichten.",
+      "already_configured": "Dieses MQTT-Topic-Präfix ist bereits eingerichtet."
+    }
+  }
+}
