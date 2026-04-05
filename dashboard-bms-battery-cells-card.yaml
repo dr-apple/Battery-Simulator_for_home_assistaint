@@ -1,0 +1,221 @@
+# BMS Battery Cells Card für die Integration "Battery Emulator"
+# -----------------------------------------------------------------
+# 1) Entitäts-IDs in HA prüfen: Entwicklerwerkzeuge → Zustände → nach "cell_" filtern.
+#    Abweichender Gerätename → Prefix nicht "battery_emulator"? Dann alle entity:-Zeilen anpassen.
+# 2) Weniger/mehr Zellen: Einträge unter "cells:" von unten kürzen oder fortlaufend ergänzen.
+# 3) In der UI: Dashboard bearbeiten → Karte hinzufügen → YAML manuell einfügen (oder Raw-Konfiguration).
+# 4) Detailansicht: total_voltage_entity, total_current_entity, soh_entity sind Pflicht für Pack-Spannung,
+#    Strom und SoH (siehe Karten-Editor). SoH bleibt „--“, wenn der BMS keinen Wert liefert.
+
+type: custom:bms-battery-cells-card
+title: Batteriezellen
+cells:
+  - entity: sensor.battery_emulator_cell_1
+    name: "1"
+  - entity: sensor.battery_emulator_cell_2
+    name: "2"
+  - entity: sensor.battery_emulator_cell_3
+    name: "3"
+  - entity: sensor.battery_emulator_cell_4
+    name: "4"
+  - entity: sensor.battery_emulator_cell_5
+    name: "5"
+  - entity: sensor.battery_emulator_cell_6
+    name: "6"
+  - entity: sensor.battery_emulator_cell_7
+    name: "7"
+  - entity: sensor.battery_emulator_cell_8
+    name: "8"
+  - entity: sensor.battery_emulator_cell_9
+    name: "9"
+  - entity: sensor.battery_emulator_cell_10
+    name: "10"
+  - entity: sensor.battery_emulator_cell_11
+    name: "11"
+  - entity: sensor.battery_emulator_cell_12
+    name: "12"
+  - entity: sensor.battery_emulator_cell_13
+    name: "13"
+  - entity: sensor.battery_emulator_cell_14
+    name: "14"
+  - entity: sensor.battery_emulator_cell_15
+    name: "15"
+  - entity: sensor.battery_emulator_cell_16
+    name: "16"
+  - entity: sensor.battery_emulator_cell_17
+    name: "17"
+  - entity: sensor.battery_emulator_cell_18
+    name: "18"
+  - entity: sensor.battery_emulator_cell_19
+    name: "19"
+  - entity: sensor.battery_emulator_cell_20
+    name: "20"
+  - entity: sensor.battery_emulator_cell_21
+    name: "21"
+  - entity: sensor.battery_emulator_cell_22
+    name: "22"
+  - entity: sensor.battery_emulator_cell_23
+    name: "23"
+  - entity: sensor.battery_emulator_cell_24
+    name: "24"
+  - entity: sensor.battery_emulator_cell_25
+    name: "25"
+  - entity: sensor.battery_emulator_cell_26
+    name: "26"
+  - entity: sensor.battery_emulator_cell_27
+    name: "27"
+  - entity: sensor.battery_emulator_cell_28
+    name: "28"
+  - entity: sensor.battery_emulator_cell_29
+    name: "29"
+  - entity: sensor.battery_emulator_cell_30
+    name: "30"
+  - entity: sensor.battery_emulator_cell_31
+    name: "31"
+  - entity: sensor.battery_emulator_cell_32
+    name: "32"
+  - entity: sensor.battery_emulator_cell_33
+    name: "33"
+  - entity: sensor.battery_emulator_cell_34
+    name: "34"
+  - entity: sensor.battery_emulator_cell_35
+    name: "35"
+  - entity: sensor.battery_emulator_cell_36
+    name: "36"
+  - entity: sensor.battery_emulator_cell_37
+    name: "37"
+  - entity: sensor.battery_emulator_cell_38
+    name: "38"
+  - entity: sensor.battery_emulator_cell_39
+    name: "39"
+  - entity: sensor.battery_emulator_cell_40
+    name: "40"
+  - entity: sensor.battery_emulator_cell_41
+    name: "41"
+  - entity: sensor.battery_emulator_cell_42
+    name: "42"
+  - entity: sensor.battery_emulator_cell_43
+    name: "43"
+  - entity: sensor.battery_emulator_cell_44
+    name: "44"
+  - entity: sensor.battery_emulator_cell_45
+    name: "45"
+  - entity: sensor.battery_emulator_cell_46
+    name: "46"
+  - entity: sensor.battery_emulator_cell_47
+    name: "47"
+  - entity: sensor.battery_emulator_cell_48
+    name: "48"
+  - entity: sensor.battery_emulator_cell_49
+    name: "49"
+  - entity: sensor.battery_emulator_cell_50
+    name: "50"
+  - entity: sensor.battery_emulator_cell_51
+    name: "51"
+  - entity: sensor.battery_emulator_cell_52
+    name: "52"
+  - entity: sensor.battery_emulator_cell_53
+    name: "53"
+  - entity: sensor.battery_emulator_cell_54
+    name: "54"
+  - entity: sensor.battery_emulator_cell_55
+    name: "55"
+  - entity: sensor.battery_emulator_cell_56
+    name: "56"
+  - entity: sensor.battery_emulator_cell_57
+    name: "57"
+  - entity: sensor.battery_emulator_cell_58
+    name: "58"
+  - entity: sensor.battery_emulator_cell_59
+    name: "59"
+  - entity: sensor.battery_emulator_cell_60
+    name: "60"
+  - entity: sensor.battery_emulator_cell_61
+    name: "61"
+  - entity: sensor.battery_emulator_cell_62
+    name: "62"
+  - entity: sensor.battery_emulator_cell_63
+    name: "63"
+  - entity: sensor.battery_emulator_cell_64
+    name: "64"
+  - entity: sensor.battery_emulator_cell_65
+    name: "65"
+  - entity: sensor.battery_emulator_cell_66
+    name: "66"
+  - entity: sensor.battery_emulator_cell_67
+    name: "67"
+  - entity: sensor.battery_emulator_cell_68
+    name: "68"
+  - entity: sensor.battery_emulator_cell_69
+    name: "69"
+  - entity: sensor.battery_emulator_cell_70
+    name: "70"
+  - entity: sensor.battery_emulator_cell_71
+    name: "71"
+  - entity: sensor.battery_emulator_cell_72
+    name: "72"
+  - entity: sensor.battery_emulator_cell_73
+    name: "73"
+  - entity: sensor.battery_emulator_cell_74
+    name: "74"
+  - entity: sensor.battery_emulator_cell_75
+    name: "75"
+  - entity: sensor.battery_emulator_cell_76
+    name: "76"
+  - entity: sensor.battery_emulator_cell_77
+    name: "77"
+  - entity: sensor.battery_emulator_cell_78
+    name: "78"
+  - entity: sensor.battery_emulator_cell_79
+    name: "79"
+  - entity: sensor.battery_emulator_cell_80
+    name: "80"
+  - entity: sensor.battery_emulator_cell_81
+    name: "81"
+  - entity: sensor.battery_emulator_cell_82
+    name: "82"
+  - entity: sensor.battery_emulator_cell_83
+    name: "83"
+  - entity: sensor.battery_emulator_cell_84
+    name: "84"
+  - entity: sensor.battery_emulator_cell_85
+    name: "85"
+  - entity: sensor.battery_emulator_cell_86
+    name: "86"
+  - entity: sensor.battery_emulator_cell_87
+    name: "87"
+  - entity: sensor.battery_emulator_cell_88
+    name: "88"
+  - entity: sensor.battery_emulator_cell_89
+    name: "89"
+  - entity: sensor.battery_emulator_cell_90
+    name: "90"
+  - entity: sensor.battery_emulator_cell_91
+    name: "91"
+  - entity: sensor.battery_emulator_cell_92
+    name: "92"
+  - entity: sensor.battery_emulator_cell_93
+    name: "93"
+  - entity: sensor.battery_emulator_cell_94
+    name: "94"
+  - entity: sensor.battery_emulator_cell_95
+    name: "95"
+  - entity: sensor.battery_emulator_cell_96
+    name: "96"
+
+soc_entity: sensor.battery_emulator_soc
+watt_entity: sensor.battery_emulator_battery_power
+total_voltage_entity: sensor.battery_emulator_battery_voltage
+total_current_entity: sensor.battery_emulator_battery_current
+cell_diff_sensor: sensor.battery_emulator_cell_voltage_delta
+temp_entity: sensor.battery_emulator_temperature_max
+soh_entity: sensor.battery_emulator_state_of_health
+
+min_voltage: 2.6
+max_voltage: 3.65
+show_min_max: true
+show_average: true
+show_values: true
+show_detailed_view: true
+enable_animations: true
+show_legend: true
