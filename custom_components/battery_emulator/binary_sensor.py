@@ -1,11 +1,8 @@
-"""Per-cell balancing state from Battery Emulator /balancing_data topics."""
+"""Battery status and per-cell balancing binary sensors."""
 
 from __future__ import annotations
 
-from homeassistant.components.binary_sensor import (
-    BinarySensorDeviceClass,
-    BinarySensorEntity,
-)
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -14,13 +11,64 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import ATTR_BATTERY_INDEX, CONF_USE_BATTERY_2, DOMAIN
 from .hub import BatteryEmulatorMqttHub, update_signal
+from .helpers import balancing_status, charging_status
+
+
+class BatteryEmulatorStatusBinarySensor(BinarySensorEntity):
+    """Read-only charge, discharge, or balancing state for the dashboard."""
+
+    _attr_has_entity_name = True
+
+    def __init__(
+        self,
+        hub: BatteryEmulatorMqttHub,
+        entry: ConfigEntry,
+        battery_index: int,
+        status: str,
+    ) -> None:
+        self._hub = hub
+        self._entry = entry
+        self._battery_index = battery_index
+        self._status = status
+        suffix = " 2" if battery_index == 2 else ""
+        self._attr_name = f"{status.capitalize()}{suffix}"
+        self._attr_unique_id = f"{entry.entry_id}_bat{battery_index}_{status}"
+        self._attr_extra_state_attributes = {ATTR_BATTERY_INDEX: battery_index}
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, entry.entry_id)},
+            name=entry.data["name"],
+            manufacturer="DalaTech",
+            model="Battery Emulator",
+            configuration_url="https://github.com/dalathegreat/Battery-Emulator",
+        )
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self.hass,
+                update_signal(self._entry.entry_id),
+                self._handle_update,
+            )
+        )
+
+    @callback
+    def _handle_update(self) -> None:
+        self.async_write_ha_state()
+
+    @property
+    def is_on(self) -> bool | None:
+        if self._status in {"charging", "discharging"}:
+            return charging_status(self._hub.info, self._battery_index, self._status)
+        return balancing_status(
+            self._hub.info, self._hub.cell_balancing, self._battery_index
+        )
 
 
 class BatteryEmulatorCellBalanceBinarySensor(BinarySensorEntity):
     """Balancing active for one cell (optional input for BMS Battery Cells Card)."""
 
     _attr_has_entity_name = True
-    _attr_device_class = BinarySensorDeviceClass.BATTERY
 
     def __init__(
         self,
@@ -78,6 +126,14 @@ async def async_setup_entry(
     batteries = [1]
     if entry.data.get(CONF_USE_BATTERY_2):
         batteries.append(2)
+
+    async_add_entities(
+        [
+            BatteryEmulatorStatusBinarySensor(hub, entry, battery_index, status)
+            for battery_index in batteries
+            for status in ("charging", "discharging", "balancing")
+        ]
+    )
 
     added: dict[int, int] = {1: 0, 2: 0}
 
