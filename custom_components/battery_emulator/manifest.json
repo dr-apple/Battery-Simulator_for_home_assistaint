@@ -4,10 +4,10 @@
   "codeowners": ["@drapple"],
   "config_flow": true,
   "dependencies": ["mqtt"],
-  "documentation": "https://github.com/dalathegreat/Battery-Emulator",
+  "documentation": "https://github.com/dr-apple/Battery-Simulator_for_home_assistaint",
   "integration_type": "device",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/dalathegreat/Battery-Emulator/issues",
+  "issue_tracker": "https://github.com/dr-apple/Battery-Simulator_for_home_assistaint/issues",
   "requirements": [],
-  "version": "1.0.0"
+  "version": "1.1.0"
 }

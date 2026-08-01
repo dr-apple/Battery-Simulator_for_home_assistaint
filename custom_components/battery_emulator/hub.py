@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-import logging
 import inspect
+import logging
 from collections.abc import Callable
 from typing import Any
 
@@ -18,9 +18,11 @@ from .const import (
     TOPIC_SUFFIX_BALANCING,
     TOPIC_SUFFIX_BALANCING_2,
     TOPIC_SUFFIX_INFO,
+    TOPIC_SUFFIX_INFO_2,
     TOPIC_SUFFIX_SPEC,
     TOPIC_SUFFIX_SPEC_2,
 )
+from .helpers import merge_info_payload, parse_bool
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,15 +78,21 @@ class BatteryEmulatorMqttHub:
             return
 
         if topic == f"{prefix}{TOPIC_SUFFIX_INFO}":
-            self.info = payload
+            # <=10 used suffixed battery-2 keys in /info. Version 11 uses
+            # unsuffixed keys on /info_2; normalize both layouts internally.
+            self.info = merge_info_payload(self.info, payload, battery_index=1)
+        elif topic == f"{prefix}{TOPIC_SUFFIX_INFO_2}":
+            self.info = merge_info_payload(self.info, payload, battery_index=2)
         elif topic == f"{prefix}{TOPIC_SUFFIX_SPEC}":
             self._parse_spec(payload, battery_index=1)
         elif topic == f"{prefix}{TOPIC_SUFFIX_SPEC_2}":
             self._parse_spec(payload, battery_index=2)
         elif topic == f"{prefix}{TOPIC_SUFFIX_BALANCING}":
-            self._parse_balancing(payload, battery_index=1)
+            if self._parse_balancing(payload, battery_index=1):
+                self._notify_topology()
         elif topic == f"{prefix}{TOPIC_SUFFIX_BALANCING_2}":
-            self._parse_balancing(payload, battery_index=2)
+            if self._parse_balancing(payload, battery_index=2):
+                self._notify_topology()
         else:
             return
 
@@ -92,29 +100,35 @@ class BatteryEmulatorMqttHub:
 
     def _parse_spec(self, payload: dict[str, Any], battery_index: int) -> None:
         raw = payload.get("cell_voltages")
-        if not isinstance(raw, list):
-            return
-        prev = len(self.cell_volts.get(battery_index, ()))
-        try:
-            volts = [float(x) for x in raw]
-        except (TypeError, ValueError):
-            return
-        self.cell_volts[battery_index] = volts
-        if len(volts) != prev:
+        topology_changed = False
+        if isinstance(raw, list):
+            prev = len(self.cell_volts.get(battery_index, ()))
+            try:
+                volts = [float(x) for x in raw]
+            except (TypeError, ValueError):
+                pass
+            else:
+                self.cell_volts[battery_index] = volts
+                topology_changed = len(volts) != prev
+
+        # Version 11 combines balancing flags with cell voltages on spec_data.
+        if self._parse_balancing(payload, battery_index):
+            topology_changed = True
+
+        if topology_changed:
             self._notify_topology()
 
-    def _parse_balancing(self, payload: dict[str, Any], battery_index: int) -> None:
+    def _parse_balancing(self, payload: dict[str, Any], battery_index: int) -> bool:
         raw = payload.get("cell_balancing")
         if not isinstance(raw, list):
-            return
+            return False
         try:
-            bal = [bool(x) for x in raw]
+            bal = [parse_bool(value) for value in raw]
         except (TypeError, ValueError):
-            return
+            return False
         prev = len(self.cell_balancing.get(battery_index, ()))
         self.cell_balancing[battery_index] = bal
-        if len(bal) != prev:
-            self._notify_topology()
+        return len(bal) != prev
 
     async def async_start(self) -> None:
         topics = [
@@ -123,6 +137,7 @@ class BatteryEmulatorMqttHub:
             f"{self.topic_prefix}{TOPIC_SUFFIX_BALANCING}",
         ]
         if self.use_battery_2:
+            topics.append(f"{self.topic_prefix}{TOPIC_SUFFIX_INFO_2}")
             topics.append(f"{self.topic_prefix}{TOPIC_SUFFIX_SPEC_2}")
             topics.append(f"{self.topic_prefix}{TOPIC_SUFFIX_BALANCING_2}")
 
