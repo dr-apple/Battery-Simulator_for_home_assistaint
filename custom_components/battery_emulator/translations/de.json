@@ -4,11 +4,20 @@
     "step": {
       "user": {
         "title": "Battery Emulator (MQTT)",
-        "description": "Verwendet dasselbe MQTT-Topic-Präfix wie im Web-UI des Battery Emulator (Standard: BE). Die Home-Assistant-MQTT-Integration muss bereits eingerichtet sein.",
+        "description": "Verwende das MQTT-Topic-Präfix des Battery Emulator. Seit Battery Emulator v11 ist dies der konfigurierte Hostname (zum Beispiel battery-emulator-a1b2); ältere Versionen verwenden standardmäßig BE. Die Home-Assistant-MQTT-Integration muss bereits eingerichtet sein.",
         "data": {
           "topic_prefix": "MQTT-Topic-Präfix",
           "name": "Gerätename",
-          "use_battery_2": "Zweites Batteriepack (spec_data_2 / balancing_data_2)"
+          "use_battery_2": "Zweites Batteriepack (info_2 / spec_data_2)"
+        }
+      },
+      "reconfigure": {
+        "title": "Battery-Emulator-MQTT neu konfigurieren",
+        "description": "Aktualisiere das MQTT-Topic nach einer Änderung des Hostnamens oder dem Upgrade auf Battery Emulator v11.",
+        "data": {
+          "topic_prefix": "MQTT-Topic-Präfix / Hostname",
+          "name": "Gerätename",
+          "use_battery_2": "Zweites Batteriepack (info_2 / spec_data_2)"
         }
       }
     },

@@ -186,6 +186,15 @@ def _battery_field_descriptions(
             key=f"balancing_status{sk}",
             name=f"Balancing status{ns}",
         ),
+        SensorEntityDescription(
+            key=f"charging_state{sk}",
+            name=f"Charging state{ns}",
+        ),
+        SensorEntityDescription(
+            key=f"limiting_factor{sk}",
+            name=f"Limiting factor{ns}",
+            entity_category=EntityCategory.DIAGNOSTIC,
+        ),
     )
 
 
@@ -236,6 +245,10 @@ _INFO_TEXT_KEYS = frozenset(
         "emulator_status",
         "balancing_status",
         "balancing_status_2",
+        "charging_state",
+        "charging_state_2",
+        "limiting_factor",
+        "limiting_factor_2",
     }
 )
 

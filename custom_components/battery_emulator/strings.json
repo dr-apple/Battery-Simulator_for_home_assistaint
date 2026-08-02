@@ -4,11 +4,20 @@
     "step": {
       "user": {
         "title": "Battery Emulator (MQTT)",
-        "description": "Uses the same MQTT topic prefix as configured in the Battery Emulator web UI (default: BE). The Home Assistant MQTT integration must already be configured.",
+        "description": "Use the Battery Emulator MQTT topic prefix. Since Battery Emulator v11 this is the configured hostname (for example battery-emulator-a1b2); older versions default to BE. The Home Assistant MQTT integration must already be configured.",
         "data": {
           "topic_prefix": "MQTT topic prefix",
           "name": "Device name",
-          "use_battery_2": "Second battery pack (spec_data_2 / balancing_data_2)"
+          "use_battery_2": "Second battery pack (info_2 / spec_data_2)"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Battery Emulator MQTT",
+        "description": "Update the MQTT topic after changing the Battery Emulator hostname or upgrading to v11.",
+        "data": {
+          "topic_prefix": "MQTT topic prefix / hostname",
+          "name": "Device name",
+          "use_battery_2": "Second battery pack (info_2 / spec_data_2)"
         }
       }
     },
