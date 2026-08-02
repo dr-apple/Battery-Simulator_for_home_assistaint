@@ -8,6 +8,7 @@ CONF_USE_BATTERY_2 = "use_battery_2"
 DEFAULT_TOPIC_PREFIX = "BE"
 
 TOPIC_SUFFIX_INFO = "/info"
+TOPIC_SUFFIX_INFO_2 = "/info_2"
 TOPIC_SUFFIX_SPEC = "/spec_data"
 TOPIC_SUFFIX_SPEC_2 = "/spec_data_2"
 TOPIC_SUFFIX_BALANCING = "/balancing_data"

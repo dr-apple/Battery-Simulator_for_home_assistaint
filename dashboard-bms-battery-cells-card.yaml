@@ -210,6 +210,9 @@ total_current_entity: sensor.battery_emulator_battery_current
 cell_diff_sensor: sensor.battery_emulator_cell_voltage_delta
 temp_entity: sensor.battery_emulator_temperature_max
 soh_entity: sensor.battery_emulator_state_of_health
+stat_charge_entity: binary_sensor.battery_emulator_charging
+stat_discharge_entity: binary_sensor.battery_emulator_discharging
+stat_balance_entity: binary_sensor.battery_emulator_balancing
 
 min_voltage: 2.6
 max_voltage: 3.65
