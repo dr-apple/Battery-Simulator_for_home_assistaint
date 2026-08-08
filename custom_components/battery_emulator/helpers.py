@@ -33,16 +33,12 @@ def merge_info_payload(
         return {**current, **{f"{key}_2": value for key, value in payload.items()}}
 
     preserved_battery_2 = {
-        key: value
-        for key, value in current.items()
-        if key.endswith("_2") and key not in payload
+        key: value for key, value in current.items() if key.endswith("_2") and key not in payload
     }
     return {**payload, **preserved_battery_2}
 
 
-def charging_status(
-    info: dict[str, Any], battery_index: int, expected_state: str
-) -> bool | None:
+def charging_status(info: dict[str, Any], battery_index: int, expected_state: str) -> bool | None:
     """Return whether a battery is charging or discharging."""
     state = info.get(info_key("charging_state", battery_index))
     if state is not None:

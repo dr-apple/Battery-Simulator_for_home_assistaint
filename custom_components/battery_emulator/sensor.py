@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import math
+
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -19,9 +21,10 @@ from homeassistant.const import (
     UnitOfTime,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import DeviceInfo, EntityCategory
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity import EntityCategory
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import ATTR_BATTERY_INDEX, CONF_USE_BATTERY_2, DOMAIN
 from .hub import BatteryEmulatorMqttHub, update_signal
@@ -300,14 +303,16 @@ class BatteryEmulatorInfoSensor(SensorEntity):
             return str(raw)
         if key.startswith("balancing_active_cells"):
             try:
-                return int(float(raw))
+                value = float(raw)
             except (TypeError, ValueError):
                 return None
+            return int(value) if math.isfinite(value) else None
         if self.entity_description.native_unit_of_measurement is not None:
             try:
-                return float(raw)
+                value = float(raw)
             except (TypeError, ValueError):
                 return None
+            return value if math.isfinite(value) else None
         return str(raw)
 
 
@@ -333,9 +338,7 @@ class BatteryEmulatorCellSensor(SensorEntity):
         self._cell_index = cell_number - 1
         ns = _name_suffix(battery_index)
         self._attr_name = f"Cell {cell_number}{ns}"
-        self._attr_unique_id = (
-            f"{entry.entry_id}_bat{battery_index}_cell_{cell_number}"
-        )
+        self._attr_unique_id = f"{entry.entry_id}_bat{battery_index}_cell_{cell_number}"
         self._attr_extra_state_attributes = {ATTR_BATTERY_INDEX: battery_index}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
@@ -370,7 +373,7 @@ class BatteryEmulatorCellSensor(SensorEntity):
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     hub: BatteryEmulatorMqttHub = hass.data[DOMAIN][entry.entry_id]
     entities: list[SensorEntity] = []
@@ -405,5 +408,5 @@ async def async_setup_entry(
         if to_add:
             async_add_entities(to_add)
 
-    hub.set_cell_topology_listener(ensure_cell_sensors)
+    entry.async_on_unload(hub.add_cell_topology_listener(ensure_cell_sensors))
     ensure_cell_sensors()
