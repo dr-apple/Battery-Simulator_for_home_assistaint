@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.1.1] - 2026-08-08
+
+### Fixed
+
+- Updated Home Assistant 2026.8 entity callback and device registry APIs.
+- Removed dynamic cell topology listeners cleanly during config entry unloads.
+- Rejected non-finite numeric MQTT values before publishing sensor states.
+- Corrected the GitHub code owner in the integration manifest.
+
+### Validation
+
+- Eight tests pass against Home Assistant 2026.8.1.
+- Ruff linting and formatting checks pass.
+
 ## [1.1.0] - 2026-08-02
 
 ### Fixed

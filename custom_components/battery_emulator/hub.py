@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import inspect
 import logging
 from collections.abc import Callable
 from typing import Any
@@ -51,15 +50,20 @@ class BatteryEmulatorMqttHub:
         self._unsub: list[Callable[[], None]] = []
         self._on_cell_topology_change: list[Callable[[], None]] = []
 
-    def set_cell_topology_listener(self, cb: Callable[[], None]) -> None:
+    @callback
+    def add_cell_topology_listener(self, cb: Callable[[], None]) -> Callable[[], None]:
+        """Register a cell topology listener and return its remover."""
         self._on_cell_topology_change.append(cb)
 
+        def remove_listener() -> None:
+            self._on_cell_topology_change.remove(cb)
+
+        return remove_listener
+
+    @callback
     def _notify_topology(self) -> None:
         for cb in self._on_cell_topology_change:
-            if inspect.iscoroutinefunction(cb):
-                self.hass.async_create_task(cb())
-            else:
-                cb()
+            cb()
 
     @callback
     def _mqtt_message(self, msg: ReceiveMessage) -> None:
