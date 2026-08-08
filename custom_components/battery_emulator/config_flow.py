@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import voluptuous as vol
-
 from homeassistant.components.mqtt import DOMAIN as MQTT_DOMAIN
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.data_entry_flow import FlowResult
@@ -24,9 +23,7 @@ class BatteryEmulatorConfigFlow(ConfigFlow, domain=DOMAIN):
                     CONF_TOPIC_PREFIX,
                     default=defaults.get(CONF_TOPIC_PREFIX, DEFAULT_TOPIC_PREFIX),
                 ): str,
-                vol.Required(
-                    "name", default=defaults.get("name", "Battery Emulator")
-                ): str,
+                vol.Required("name", default=defaults.get("name", "Battery Emulator")): str,
                 vol.Optional(
                     CONF_USE_BATTERY_2,
                     default=defaults.get(CONF_USE_BATTERY_2, False),
@@ -34,9 +31,7 @@ class BatteryEmulatorConfigFlow(ConfigFlow, domain=DOMAIN):
             }
         )
 
-    async def async_step_user(
-        self, user_input: dict | None = None
-    ) -> FlowResult:
+    async def async_step_user(self, user_input: dict | None = None) -> FlowResult:
         if not self.hass.config_entries.async_entries(MQTT_DOMAIN):
             return self.async_abort(reason="mqtt_not_configured")
 
@@ -58,13 +53,9 @@ class BatteryEmulatorConfigFlow(ConfigFlow, domain=DOMAIN):
                     },
                 )
 
-        return self.async_show_form(
-            step_id="user", data_schema=self._schema({}), errors=errors
-        )
+        return self.async_show_form(step_id="user", data_schema=self._schema({}), errors=errors)
 
-    async def async_step_reconfigure(
-        self, user_input: dict | None = None
-    ) -> FlowResult:
+    async def async_step_reconfigure(self, user_input: dict | None = None) -> FlowResult:
         """Allow changing the MQTT hostname/topic after a v11 upgrade."""
         entry = self._get_reconfigure_entry()
         errors: dict[str, str] = {}

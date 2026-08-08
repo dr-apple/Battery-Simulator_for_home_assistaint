@@ -2,6 +2,9 @@
 
 Custom Integration für [Battery Emulator](https://github.com/dalathegreat/Battery-Emulator): liest die MQTT-Topics (`{Präfix}/info`, `{Präfix}/spec_data` und bei älteren Versionen `{Präfix}/balancing_data`) und legt **eine Sensor-Entität pro Zelle** sowie **optional pro Zelle einen Balancing-Status** (`binary_sensor`) an. Damit lässt sich die [BMS Battery Cells Card](https://github.com/jayjojayson/bms-battery-cells-card) direkt befüllen.
 
+Version `1.1.1` ist mit Home Assistant `2026.8` kompatibel und gegen `2026.8.1`
+getestet.
+
 ## Voraussetzungen
 
 - Home Assistant mit konfigurierter **MQTT-Integration** (Broker muss die Nachrichten des Battery Emulator empfangen).
