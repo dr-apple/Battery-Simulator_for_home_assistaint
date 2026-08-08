@@ -5,13 +5,13 @@ from __future__ import annotations
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import ATTR_BATTERY_INDEX, CONF_USE_BATTERY_2, DOMAIN
-from .hub import BatteryEmulatorMqttHub, update_signal
 from .helpers import balancing_status, charging_status
+from .hub import BatteryEmulatorMqttHub, update_signal
 
 
 class BatteryEmulatorStatusBinarySensor(BinarySensorEntity):
@@ -60,9 +60,7 @@ class BatteryEmulatorStatusBinarySensor(BinarySensorEntity):
     def is_on(self) -> bool | None:
         if self._status in {"charging", "discharging"}:
             return charging_status(self._hub.info, self._battery_index, self._status)
-        return balancing_status(
-            self._hub.info, self._hub.cell_balancing, self._battery_index
-        )
+        return balancing_status(self._hub.info, self._hub.cell_balancing, self._battery_index)
 
 
 class BatteryEmulatorCellBalanceBinarySensor(BinarySensorEntity):
@@ -83,9 +81,7 @@ class BatteryEmulatorCellBalanceBinarySensor(BinarySensorEntity):
         self._cell_index = cell_number - 1
         suffix = " 2" if battery_index == 2 else ""
         self._attr_name = f"Cell {cell_number} balancing{suffix}"
-        self._attr_unique_id = (
-            f"{entry.entry_id}_bat{battery_index}_balance_{cell_number}"
-        )
+        self._attr_unique_id = f"{entry.entry_id}_bat{battery_index}_balance_{cell_number}"
         self._attr_extra_state_attributes = {ATTR_BATTERY_INDEX: battery_index}
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
@@ -120,7 +116,7 @@ class BatteryEmulatorCellBalanceBinarySensor(BinarySensorEntity):
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     hub: BatteryEmulatorMqttHub = hass.data[DOMAIN][entry.entry_id]
     batteries = [1]
@@ -149,5 +145,5 @@ async def async_setup_entry(
         if to_add:
             async_add_entities(to_add)
 
-    hub.set_cell_topology_listener(ensure_balance_entities)
+    entry.async_on_unload(hub.add_cell_topology_listener(ensure_balance_entities))
     ensure_balance_entities()

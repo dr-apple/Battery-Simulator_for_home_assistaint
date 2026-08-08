@@ -1,7 +1,7 @@
 {
   "domain": "battery_emulator",
   "name": "Battery Emulator",
-  "codeowners": ["@drapple"],
+  "codeowners": ["@dr-apple"],
   "config_flow": true,
   "dependencies": ["mqtt"],
   "documentation": "https://github.com/dr-apple/Battery-Simulator_for_home_assistaint",
@@ -9,5 +9,5 @@
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/dr-apple/Battery-Simulator_for_home_assistaint/issues",
   "requirements": [],
-  "version": "1.1.0"
+  "version": "1.1.1"
 }
