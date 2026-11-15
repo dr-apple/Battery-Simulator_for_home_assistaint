@@ -1,74 +1,81 @@
 # Battery Emulator (Home Assistant)
 
-Custom Integration für [Battery Emulator](https://github.com/dalathegreat/Battery-Emulator): liest die MQTT-Topics (`{Präfix}/info`, `{Präfix}/spec_data` und bei älteren Versionen `{Präfix}/balancing_data`) und legt **eine Sensor-Entität pro Zelle** sowie **optional pro Zelle einen Balancing-Status** (`binary_sensor`) an. Damit lässt sich die [BMS Battery Cells Card](https://github.com/jayjojayson/bms-battery-cells-card) direkt befüllen.
+**English** · [Deutsch](README.de.md)
 
-Version `1.1.1` ist mit Home Assistant `2026.8` kompatibel und gegen `2026.8.1`
-getestet.
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
 
-## Voraussetzungen
+![Battery Emulator for Home Assistant](docs/images/banner.svg)
 
-- Home Assistant mit konfigurierter **MQTT-Integration** (Broker muss die Nachrichten des Battery Emulator empfangen).
-- Im Battery Emulator: MQTT aktiv; **„Transmit all cell voltages“** (`mqtt_transmit_all_cellvoltages`) einschalten, sonst fehlen `spec_data` / Zellspannungen.
+Custom integration for [Battery Emulator](https://github.com/dalathegreat/Battery-Emulator): it reads the MQTT topics (`{prefix}/info`, `{prefix}/spec_data` and, on older versions, `{prefix}/balancing_data`) and creates **one sensor entity per cell** plus **optionally one balancing status per cell** (`binary_sensor`). This feeds the [BMS Battery Cells Card](https://github.com/jayjojayson/bms-battery-cells-card) directly.
+
+Version `1.1.1` is compatible with Home Assistant `2026.8` and tested against `2026.8.1`.
+
+![How it works: Battery-Emulator → MQTT → Home Assistant → BMS card](docs/images/how-it-works.svg)
+
+## Requirements
+
+- Home Assistant with a configured **MQTT integration** (the broker must receive the Battery Emulator's messages).
+- In Battery Emulator: MQTT enabled and **"Transmit all cell voltages"** (`mqtt_transmit_all_cellvoltages`) switched on, otherwise `spec_data` / cell voltages are missing.
 
 ## Installation (HACS)
 
-1. HACS → **Integrationen** → ⋮ → **Benutzerdefiniertes Repository**.
-2. URL dieses Repositories einfügen, Kategorie **Integration**.
-3. **Battery Emulator** installieren und Home Assistant neu starten.
+1. HACS → **Integrations** → ⋮ → **Custom repositories**.
+2. Add `https://github.com/dr-apple/Battery-Simulator_for_home_assistaint`, category **Integration**.
+3. Install **Battery Emulator** and restart Home Assistant.
 
-## Einrichtung
+## Setup
 
-**Einstellungen → Geräte & Dienste → Integration hinzufügen → Battery Emulator**
+**Settings → Devices & services → Add integration → Battery Emulator**
 
-Im Assistenten: MQTT-Topic-Präfix wie im Web-UI des Boards, Gerätename, optional zweites Pack.
+In the wizard: the MQTT topic prefix as shown in the board's web UI, a device name, optionally a second pack.
 
-> **Battery Emulator v11:** Das MQTT-Präfix entspricht jetzt dem **Hostnamen**, zum Beispiel `battery-emulator-a1b2`. Bei älteren Versionen war der Standard `BE`. Nach einem Upgrade kann der Eintrag unter **Einstellungen → Geräte & Dienste → Battery Emulator → Neu konfigurieren** angepasst werden; ein Löschen und erneutes Anlegen ist nicht nötig.
+> **Battery Emulator v11:** the MQTT prefix is now the **hostname**, e.g. `battery-emulator-a1b2`. On older versions the default was `BE`. After an upgrade, adjust the entry under **Settings → Devices & services → Battery Emulator → Reconfigure**; deleting and re-adding is not necessary.
 
-## Entitäten in Home Assistant
+## Entities in Home Assistant
 
-Die Integration legt u. a. Pack-Spannung, Strom, Leistung, SoC, SoH (wenn der BMS liefert), Zell-Differenz, Temperaturen sowie **je Zelle** einen Spannungssensor und (bei empfangenen Balancing-Daten) einen **Binary Sensor** „Cell N balancing“ an. Die Binary Sensoren **Charging**, **Discharging** und **Balancing** liefern außerdem die drei Statusanzeigen der Detailansicht.
+The integration creates pack voltage, current, power, SoC, SoH (if the BMS provides it), cell delta, temperatures and **per cell** a voltage sensor and (when balancing data is received) a **binary sensor** "Cell N balancing". The binary sensors **Charging**, **Discharging** and **Balancing** provide the three status indicators of the detail view.
 
-![Auszug Sensoren: Pack-Kennwerte, Zellspannungen und Balancing pro Zelle](docs/images/ha-sensors-list.png)
+![Sensor excerpt: pack values, cell voltages and balancing per cell](docs/images/ha-sensors-list.png)
 
 ## Dashboard: BMS Battery Cells Card
 
-Mit `show_detailed_view: true` erhältst du die Übersicht mit Kennzahlen, Zellenliste und optional Balkendiagramm – wie in diesem Beispiel (96 Zellen, Entitäts-Präfix `battery_emulator`).
+With `show_detailed_view: true` you get the overview with key figures, cell list and optional bar chart – as in this example (96 cells, entity prefix `battery_emulator`).
 
-![BMS Battery Cells Card: Detailansicht und Zellenbalken](docs/images/dashboard-bms-detailed-view.png)
+![BMS Battery Cells Card: detail view and cell bars](docs/images/dashboard-bms-detailed-view.png)
 
-### Fertige Lovelace-YAML im Repository
+### Ready-made Lovelace YAML in this repository
 
-Im Projekt liegt eine **vollständige Kartenkonfiguration** inklusive aller Zell-Entitäten (Standard 1–96, bei Bedarf kürzen):
+The project contains a **complete card configuration** including all cell entities (default 1–96, shorten as needed):
 
 **[dashboard-bms-battery-cells-card.yaml](dashboard-bms-battery-cells-card.yaml)**
 
-**Einbindung:** Dashboard bearbeiten → Karte hinzufügen → **Manuell / YAML** → Inhalt der Datei einfügen (oder per Raw-Dashboard-Editor).
+**How to add it:** edit dashboard → add card → **Manual / YAML** → paste the file's content (or use the raw dashboard editor).
 
-**Wichtig:** Wenn dein Gerät in HA anders heißt, unter *Entwicklerwerkzeuge → Zustände* nach `cell_` filtern und alle `entity:`-Zeilen sowie die `*_entity:`-Keys auf deine echten IDs anpassen.
+**Important:** if your device has a different name in HA, filter for `cell_` under *Developer tools → States* and adjust all `entity:` lines and `*_entity:` keys to your real IDs.
 
-### Wichtige Karten-Optionen (jayjojayson-Karte)
+### Important card options (jayjojayson card)
 
-Die offizielle README der Karte listet nicht alle Felder; im **Karten-Editor** sind u. a. diese Sensoren vorgesehen:
+The card's official README doesn't list all fields; the **card editor** provides these sensors, among others:
 
-| YAML-Key | Zweck | Typische Integration-Sensor-ID |
-| -------- | ----- | ------------------------------ |
-| `soc_entity` | Ladezustand | `sensor.…_soc` |
-| `watt_entity` | Leistung (W) | `sensor.…_battery_power` |
-| `total_voltage_entity` | Pack-Spannung (V) | `sensor.…_battery_voltage` |
-| `total_current_entity` | Strom (A) | `sensor.…_battery_current` |
-| `cell_diff_sensor` | Zell-Differenz (mV) | `sensor.…_cell_voltage_delta` |
-| `temp_entity` | Temperatur | `sensor.…_temperature_max` |
-| `soh_entity` | State of Health (%) | `sensor.…_state_of_health` |
-| `stat_charge_entity` | Ladestatus | `binary_sensor.…_charging` |
-| `stat_discharge_entity` | Entladestatus | `binary_sensor.…_discharging` |
-| `stat_balance_entity` | globaler Balancing-Status | `binary_sensor.…_balancing` |
-| `show_detailed_view` | Detail-Dashboard | `true` |
+| YAML key | Purpose | Typical sensor ID of this integration |
+| -------- | ------- | ------------------------------------- |
+| `soc_entity` | State of charge | `sensor.…_soc` |
+| `watt_entity` | Power (W) | `sensor.…_battery_power` |
+| `total_voltage_entity` | Pack voltage (V) | `sensor.…_battery_voltage` |
+| `total_current_entity` | Current (A) | `sensor.…_battery_current` |
+| `cell_diff_sensor` | Cell delta (mV) | `sensor.…_cell_voltage_delta` |
+| `temp_entity` | Temperature | `sensor.…_temperature_max` |
+| `soh_entity` | State of health (%) | `sensor.…_state_of_health` |
+| `stat_charge_entity` | Charging status | `binary_sensor.…_charging` |
+| `stat_discharge_entity` | Discharging status | `binary_sensor.…_discharging` |
+| `stat_balance_entity` | Global balancing status | `binary_sensor.…_balancing` |
+| `show_detailed_view` | Detail dashboard | `true` |
 
-Ergänzend: `min_voltage` / `max_voltage`, `show_min_max`, `show_average`, `show_values`, `enable_animations`, `show_legend` – siehe [dashboard-bms-battery-cells-card.yaml](dashboard-bms-battery-cells-card.yaml).
+Additionally: `min_voltage` / `max_voltage`, `show_min_max`, `show_average`, `show_values`, `enable_animations`, `show_legend` – see [dashboard-bms-battery-cells-card.yaml](dashboard-bms-battery-cells-card.yaml).
 
-### Pro Zelle: Balancing in der Karte
+### Balancing per cell in the card
 
-Unter jedem Listeneintrag `cells` kann optional `balance_entity` gesetzt werden (Binary Sensor der Integration), damit die Karte den Balancing-Status pro Zelle nutzt:
+Each entry under `cells` can optionally get a `balance_entity` (binary sensor of this integration) so the card shows the balancing state per cell:
 
 ```yaml
 cells:
@@ -80,19 +87,19 @@ cells:
     balance_entity: binary_sensor.battery_emulator_cell_2_balancing
 ```
 
-(Analog für alle Zellen; die fertige Datei im Repo enthält standardmäßig nur die Spannungs-Entitäten – `balance_entity` bei Bedarf ergänzen oder per Editor.)
+(Same for all cells; the ready-made file contains only the voltage entities by default – add `balance_entity` as needed or via the editor.)
 
-### Kurzbeispiel (Auszug)
+### Short example (excerpt)
 
 ```yaml
 type: custom:bms-battery-cells-card
-title: Batteriezellen
+title: Battery cells
 cells:
   - entity: sensor.battery_emulator_cell_1
     name: "1"
   - entity: sensor.battery_emulator_cell_2
     name: "2"
-  # … weitere Zellen
+  # … more cells
 soc_entity: sensor.battery_emulator_soc
 watt_entity: sensor.battery_emulator_battery_power
 total_voltage_entity: sensor.battery_emulator_battery_voltage
@@ -108,18 +115,35 @@ min_voltage: 2.6
 max_voltage: 3.65
 ```
 
-## Doppelte Entitäten
+## Example automation
 
-Wenn im Battery Emulator **Home Assistant Autodiscovery** aktiv ist, legt der Broker zusätzlich MQTT-Discovery-Sensoren an. Diese Integration erzeugt eigene Entitäten für die BMS-Karte. Entweder Autodiscovery im Emulator deaktivieren oder die nicht benötigten MQTT-Entitäten ignorieren/deaktivieren.
+Push notification when the cell voltage delta gets too large:
 
-## Fehlersuche
+```yaml
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.battery_emulator_cell_voltage_delta
+    above: 50   # mV
+    for: "00:05:00"
+actions:
+  - action: notify.mobile_app_my_phone
+    data:
+      title: 🔋 Battery
+      message: "Cell delta {{ states('sensor.battery_emulator_cell_voltage_delta') }} mV"
+```
 
-- **Alle Werte sind nach dem Upgrade auf v11 nicht verfügbar:** Prüfe, ob das konfigurierte MQTT-Präfix dem aktuellen Hostnamen des Battery Emulator entspricht, und nutze bei Bedarf **Neu konfigurieren**.
-- **Charge / Discharge / Balance zeigen immer OFF:** Aktualisiere die Integration auf mindestens Version 1.1.0 und übernimm die drei `stat_*_entity`-Zeilen aus der mitgelieferten Dashboard-YAML.
-- **Zellspannungen oder Zell-Balancing fehlen:** Aktiviere im Battery Emulator **Transmit all cell voltages** und warte auf das nächste Zell-Datenintervall (v11 sendet diese Daten gemeinsam über `spec_data`).
-- **`value_json is undefined` im Home-Assistant-Log:** Diese Integration verwendet für Charging, Discharging und Balancing keine Jinja- oder MQTT-Discovery-Templates. Die Meldung stammt daher von älteren oder manuell angelegten MQTT-Binary-Sensoren, die eine leere MQTT-Nachricht auswerten. Deaktiviere zuerst **Home Assistant Autodiscovery** im Battery Emulator, entferne anschließend die alten, über MQTT entdeckten Status-Entitäten und lade die MQTT-Integration neu. Die nativen `binary_sensor.…_charging`, `binary_sensor.…_discharging` und `binary_sensor.…_balancing` dieser Integration ersetzen diese Template-Sensoren.
+## Duplicate entities
 
-  Falls die alten MQTT-Sensoren absichtlich weiterverwendet werden, muss jedes Template prüfen, ob `value_json` existiert:
+If **Home Assistant auto-discovery** is enabled in Battery Emulator, the broker additionally creates MQTT discovery sensors. This integration creates its own entities for the BMS card. Either disable auto-discovery in the emulator or ignore/disable the MQTT entities you don't need.
+
+## Troubleshooting
+
+- **All values unavailable after upgrading to v11:** check that the configured MQTT prefix matches the Battery Emulator's current hostname and use **Reconfigure** if necessary.
+- **Charge / Discharge / Balance always show OFF:** update the integration to at least version 1.1.0 and take over the three `stat_*_entity` lines from the bundled dashboard YAML.
+- **Cell voltages or cell balancing missing:** enable **Transmit all cell voltages** in Battery Emulator and wait for the next cell data interval (v11 sends this data together via `spec_data`).
+- **`value_json is undefined` in the Home Assistant log:** this integration does not use Jinja or MQTT discovery templates for charging, discharging and balancing. The message comes from older or manually created MQTT binary sensors evaluating an empty MQTT message. First disable **Home Assistant auto-discovery** in Battery Emulator, then remove the old MQTT-discovered status entities and reload the MQTT integration. The native `binary_sensor.…_charging`, `binary_sensor.…_discharging` and `binary_sensor.…_balancing` of this integration replace those template sensors.
+
+  If you intentionally keep the old MQTT sensors, every template must check whether `value_json` exists:
 
   ```jinja2
   {% if value_json is defined %}
@@ -130,13 +154,17 @@ Wenn im Battery Emulator **Home Assistant Autodiscovery** aktiv ist, legt der Br
   {% endif %}
   ```
 
-  Für den Balancing-Status:
+  For the balancing status:
 
   ```jinja2
   {{ 'ON' if value_json is defined
      and true in value_json.get('cell_balancing', []) else 'OFF' }}
   ```
 
-## Hinweis
+## Note
 
-Hohe Spannung an Batterien birgt Risiken. Nur nach geltenden Vorschriften und mit Fachkenntnis arbeiten.
+High-voltage batteries are dangerous. Only work on them according to applicable regulations and with the necessary expertise.
+
+## License
+
+MIT – see [LICENSE](LICENSE). Not an official Battery-Emulator project.
